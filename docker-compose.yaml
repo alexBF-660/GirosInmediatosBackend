@@ -1,0 +1,29 @@
+version: '3'
+services:
+
+# MYSQL database
+#  database:
+#    image: mysql
+#    container_name: filament-database
+#    environment:
+#      MYSQL_DATABASE: "inventory"
+#      MYSQL_USER: admin
+#      MYSQL_PASSWORD: password
+#      MYSQL_ROOT_PASSWORD: password
+#    ports:
+#      - 3306:3306
+#    volumes:
+#      - ./mysql:/var/lib/mysql
+
+# POSTGRES
+  database:
+    image: postgres:15.3
+    container_name: giros-inmediatos-database
+    environment:
+      POSTGRES_DB: girosInmediatos
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: g1r051nm3d14t05
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pgsql:/var/lib/postgresql/data

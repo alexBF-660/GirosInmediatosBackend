@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Filament\Resources\Giros\Tables;
+
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class GirosTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('id')
+                    ->label('N° Guia')
+                    ->searchable(),
+
+                TextColumn::make('nombre_remitente')
+                    ->label('Remitente')
+                    ->searchable(),
+
+                TextColumn::make('nombre_consignatario')
+                    ->label('Consignatario')
+                    ->searchable(),
+
+                TextColumn::make('monto_enviado')
+                    ->label('Monto')
+                    ->numeric()
+                    ->sortable(),
+
+                TextColumn::make('comision_envio')
+                    ->label('Comision')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('fecha_envio')
+                    ->date()
+                    ->sortable(),
+
+                TextColumn::make('fecha_entrega')
+                    ->date()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('ci_consignatario')
+                    ->label('Carnet Consignatario')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('sucursalOrigen.nombre')
+                    ->label('Sucursal Origen')
+                    ->numeric()
+                    ->sortable(),
+
+                TextColumn::make('sucursalDestino.nombre')
+                    ->label('Sucursal Destino')
+                    ->numeric()
+                    ->sortable(),
+
+                TextColumn::make('usuarioEnvio.nombres')
+                    ->label('Enviado por')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('usuarioEntrega.nombres')
+                    ->label('Entregado por')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('estado.nombre')
+                    ->label('Estado')
+                    ->sortable()
+                    ->colors([
+                        'success' => 'Entregado',
+                        'warning' => 'Pendiente',
+                        'secondary' => 'Nulo',
+                    ]),
+
+                TextColumn::make('created_at')
+                    ->label('Fecha de creacion')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('updated_at')
+                    ->label('Fecha de modificacion')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                    
+                TextColumn::make('deleted_at')
+                    ->label('Fecha de eliminacion')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}

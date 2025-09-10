@@ -38,12 +38,6 @@ class UsuariosForm
                     ->required(),
                 TextInput::make('password')
                     ->password(),
-                Select::make('rol_id')
-                    ->label('Rol')
-                    ->searchable()
-                    ->preload()
-                    ->relationship('rol', 'nombre')
-                    ->required(),
                 Select::make('sucursal_id')
                     ->label('Sucursal')
                     ->searchable()

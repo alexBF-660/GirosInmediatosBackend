@@ -50,9 +50,6 @@ class UsuariosTable
                     ->label('correo')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                TextColumn::make('rol.nombre')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('sucursal.nombre')
                     ->numeric()
                     ->sortable(),
@@ -76,9 +73,6 @@ class UsuariosTable
                 SelectFilter::make('sucursal_id')
                     ->label('Sucursal')
                     ->relationship('sucursal', 'nombre'),
-                SelectFilter::make('rol_id')
-                    ->label('Rol')
-                    ->relationship('rol', 'nombre'),
             ])
             ->recordActions([
                 ActionGroup::make([

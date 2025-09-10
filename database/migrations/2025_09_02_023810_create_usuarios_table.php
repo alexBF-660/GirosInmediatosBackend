@@ -14,20 +14,19 @@ return new class extends Migration
         Schema::create('usuarios', function (Blueprint $table) {
             //campos de la tabla
             $table->id();
-            $table->string("nombres", 100);
-            $table->string("ap_paterno", 100);
+            $table->string("name", 100);
+            $table->string("ap_paterno", 100)->nullable();
             $table->string("ap_materno", 100)->nullable();
-            $table->string("ci", 20)->unique();
+            $table->string("ci", 20)->unique()->nullable();
             $table->string("celular", 20)->nullable();
             $table->string("foto", 255)->nullable();
-            $table->string("genero");
+            $table->string("genero")->nullable();
             $table->date("fecha_nacimiento")->nullable();
             $table->string("email", 150)->unique();
             $table->string("password", 255);
             $table->rememberToken();
             
             //campos de llaves foraneas
-            $table->foreignId("rol_id")->nullable()->constrained("roles")->nullOnDelete();
             $table->foreignId("sucursal_id")->nullable()->constrained("sucursales")->nullOnDelete();
 
             //campos de auditoria

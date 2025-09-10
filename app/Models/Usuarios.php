@@ -10,7 +10,7 @@ class Usuarios extends Authenticatable
     protected $table = 'usuarios';
 
     protected $fillable = [
-        'neme',
+        'name',
         'ap_paterno',
         'ap_materno',
         'ci',
@@ -33,19 +33,6 @@ class Usuarios extends Authenticatable
         'fecha_nacimiento' => 'date'
     ];
 
-    // Encriptar password automáticamente
-    protected function setPasswordAttribute($value)
-    {
-        if (!empty($value)) {
-            $this->attributes['password'] = bcrypt($value);
-        }
-    }
-
-    // Relaciones
-    public function rol()
-    {
-        return $this->belongsTo(Roles::class);
-    }
 
     public function sucursal()
     {

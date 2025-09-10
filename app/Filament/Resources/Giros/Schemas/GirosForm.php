@@ -72,14 +72,14 @@ class GirosForm
                     ->label('Enviado por')
                     ->searchable()
                     ->preload()
-                    ->relationship('usuarioEnvio', 'nombres')
+                    ->relationship('usuarioEnvio', 'name')
                     ->required(),
 
                 Select::make('usuario_entrega_id')
                     ->label('Entregado por')
                     ->searchable()
                     ->preload()
-                    ->relationship('usuarioEntrega', 'nombres')
+                    ->relationship('usuarioEntrega', 'name')
                     ->required(),
 
                 Select::make('estado_id')

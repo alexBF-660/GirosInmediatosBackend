@@ -22,9 +22,10 @@ return new class extends Migration
             $table->string("foto", 255)->nullable();
             $table->string("genero");
             $table->date("fecha_nacimiento")->nullable();
-            $table->string("correo", 150)->unique();
+            $table->string("email", 150)->unique();
             $table->string("password", 255);
-
+            $table->rememberToken();
+            
             //campos de llaves foraneas
             $table->foreignId("rol_id")->nullable()->constrained("roles")->nullOnDelete();
             $table->foreignId("sucursal_id")->nullable()->constrained("sucursales")->nullOnDelete();

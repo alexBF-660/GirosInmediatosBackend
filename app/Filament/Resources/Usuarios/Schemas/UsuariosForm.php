@@ -14,7 +14,8 @@ class UsuariosForm
     {
         return $schema
             ->components([
-                TextInput::make('nombres')
+                TextInput::make('name')
+                    ->label('nombres')
                     ->required(),
                 TextInput::make('ap_paterno')
                     ->required(),
@@ -31,11 +32,12 @@ class UsuariosForm
                         ])
                         ->required(),
                 DatePicker::make('fecha_nacimiento'),
-                TextInput::make('correo')
+                TextInput::make('email')
+                    ->label('correo')
+                    ->email()
                     ->required(),
                 TextInput::make('password')
-                    ->password()
-                    ->required(),
+                    ->password(),
                 Select::make('rol_id')
                     ->label('Rol')
                     ->searchable()

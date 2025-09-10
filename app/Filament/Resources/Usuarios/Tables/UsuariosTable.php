@@ -3,8 +3,11 @@
 namespace App\Filament\Resources\Usuarios\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
@@ -19,7 +22,8 @@ class UsuariosTable
                     ->label('Foto')
                     ->size(50)
                     ->getStateUsing(fn ($record) => $record->foto ? asset('storage/' . $record->foto) : asset('storage/foto.jpg')),
-                TextColumn::make('nombres')
+                TextColumn::make('name')
+                    ->label('Nombres')
                     ->searchable(),
                 TextColumn::make('ap_paterno')
                     ->label('Paterno')
@@ -42,7 +46,8 @@ class UsuariosTable
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->date()
                     ->sortable(),
-                TextColumn::make('correo')
+                TextColumn::make('email')
+                    ->label('correo')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 TextColumn::make('rol.nombre')
@@ -68,10 +73,18 @@ class UsuariosTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('sucursal_id')
+                    ->label('Sucursal')
+                    ->relationship('sucursal', 'nombre'),
+                SelectFilter::make('rol_id')
+                    ->label('Rol')
+                    ->relationship('rol', 'nombre'),
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

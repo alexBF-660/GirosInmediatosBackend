@@ -3,8 +3,11 @@
 namespace App\Filament\Resources\Sucursales\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -53,10 +56,15 @@ class SucursalesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('departamento_id')
+                    ->label('Departamento')
+                    ->relationship('departamento', 'nombre'),
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

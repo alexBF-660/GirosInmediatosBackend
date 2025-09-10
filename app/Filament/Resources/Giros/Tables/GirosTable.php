@@ -3,8 +3,11 @@
 namespace App\Filament\Resources\Giros\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -61,13 +64,13 @@ class GirosTable
                     ->numeric()
                     ->sortable(),
 
-                TextColumn::make('usuarioEnvio.nombres')
+                TextColumn::make('usuarioEnvio.name')
                     ->label('Enviado por')
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('usuarioEntrega.nombres')
+                TextColumn::make('usuarioEntrega.name')
                     ->label('Entregado por')
                     ->numeric()
                     ->sortable()
@@ -101,10 +104,21 @@ class GirosTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('sucursal_origen_id')
+                    ->label('Enviados desde')
+                    ->relationship('sucursalOrigen', 'nombre'),
+                SelectFilter::make('sucursal_destino_id')
+                    ->label('Recibidos en')
+                    ->relationship('sucursalDestino', 'nombre'),
+                SelectFilter::make('estado_id')
+                    ->label('Estado')
+                    ->relationship('estado', 'nombre'),
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

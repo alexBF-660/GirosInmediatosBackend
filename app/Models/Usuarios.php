@@ -7,8 +7,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Usuarios extends Authenticatable
 {
+    protected $table = 'usuarios';
+
     protected $fillable = [
-        'nombres',
+        'neme',
         'ap_paterno',
         'ap_materno',
         'ci',
@@ -16,7 +18,7 @@ class Usuarios extends Authenticatable
         'foto',
         'genero',
         'fecha_nacimiento',
-        'correo',
+        'email',
         'password',
         'rol_id',
         'sucursal_id',
@@ -28,8 +30,7 @@ class Usuarios extends Authenticatable
     ];
 
     protected $casts = [
-        'fecha_nacimiento' => 'date',
-        'password' => 'hashed',
+        'fecha_nacimiento' => 'date'
     ];
 
     // Encriptar password automáticamente

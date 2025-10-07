@@ -58,7 +58,14 @@ class UserForm
                     ->label('Foto del usuario')
                     ->visibility('public')
                     ->preserveFilenames()
-                    ->acceptedFileTypes(['image/*'])
+                    ->acceptedFileTypes(['image/*']),
+                Select::make('roles')
+                    ->label('Rol')
+                    ->placeholder('Seleccione el rol del usuario')
+                    ->relationship('roles', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->multiple()
                     ->required(),
             ]);
     }

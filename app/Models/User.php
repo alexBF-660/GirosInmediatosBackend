@@ -19,8 +19,17 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'ap_paterno',
+        'ap_materno',
+        'ci',
+        'celular',
+        'foto',
+        'genero',
+        'fecha_nacimiento',
         'email',
         'password',
+        'rol_id',
+        'sucursal_id',
     ];
 
     /**
@@ -33,6 +42,14 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $casts = [
+        'fecha_nacimiento' => 'date'
+    ];
+
+    public function sucursal()
+    {
+        return $this->belongsTo(Sucursales::class);
+    }
     /**
      * Get the attributes that should be cast.
      *

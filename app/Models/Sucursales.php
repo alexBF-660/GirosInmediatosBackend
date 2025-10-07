@@ -22,7 +22,7 @@ class Sucursales extends Model
 
     public function usuarios()
     {
-        return $this->hasMany(Usuarios::class, 'sucursal_id');
+        return $this->hasMany(User::class, 'sucursal_id');
     }
 
     public function girosOrigen()

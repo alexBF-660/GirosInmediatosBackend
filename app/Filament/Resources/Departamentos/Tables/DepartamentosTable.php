@@ -22,23 +22,23 @@ class DepartamentosTable
                     ->searchable(),
 
                 TextColumn::make('paises.nombre')
-                    ->label('Pais')
+                    ->label('País')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label('Fecha de creacion')
+                    ->label('Fecha de creación')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
-                    ->label('Fecha de modificacion')
+                    ->label('Fecha de modificación')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('deleted_at')
-                    ->label('Fecha de Eliminacion')
+                    ->label('Fecha de Eliminación')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

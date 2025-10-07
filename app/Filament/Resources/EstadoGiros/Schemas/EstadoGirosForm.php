@@ -14,9 +14,11 @@ class EstadoGirosForm
         return $schema
             ->components([
                 TextInput::make('nombre')
-                    ->placeholder('Nombre')
+                    ->placeholder('Nombre del estado')
                     ->required(),
                 Textarea::make('descripcion')
+                    ->label('Descripción')
+                    ->placeholder('Descripción del estado')
                     ->columnSpanFull(),
             ]);
     }

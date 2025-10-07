@@ -13,10 +13,12 @@ class DepartamentoForm
         return $schema
             ->components([
                 TextInput::make('nombre')
+                    ->placeholder('Nombre del departamento')
                     ->required(),
 
                 Select::make('pais_id')
-                    ->label('Pais')
+                    ->label('País')
+                    ->placeholder('Seleccion el país')
                     ->searchable()
                     ->preload()
                     ->relationship('paises', 'nombre')

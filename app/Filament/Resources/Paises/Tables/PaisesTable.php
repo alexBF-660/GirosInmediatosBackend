@@ -17,21 +17,21 @@ class PaisesTable
         return $table
             ->columns([
                 TextColumn::make('nombre')
-                    ->label('Pais')
+                    ->label('País')
                     ->searchable(),
 
                 TextColumn::make('created_at')
-                    ->label('Fecha de creacion')
+                    ->label('Fecha de creación')
                     ->dateTime()
                     ->sortable(),
 
                 TextColumn::make('updated_at')
-                    ->label('Fecha de modificacion')
+                    ->label('Fecha de modificación')
                     ->dateTime()
                     ->sortable(),
 
                 TextColumn::make('deleted_at')
-                    ->label('Fecha de eliminacion')
+                    ->label('Fecha de eliminación')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

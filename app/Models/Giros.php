@@ -41,12 +41,12 @@ class Giros extends Model
 
     public function usuarioEnvio()
     {
-        return $this->belongsTo(Usuarios::class, 'usuario_envio_id');
+        return $this->belongsTo(User::class, 'usuario_envio_id');
     }
 
     public function usuarioEntrega()
     {
-        return $this->belongsTo(Usuarios::class, 'usuario_entrega_id');
+        return $this->belongsTo(User::class, 'usuario_entrega_id');
     }
 
     public function estado()

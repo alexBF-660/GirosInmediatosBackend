@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Usuarios\Tables;
+namespace App\Filament\Resources\Users\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\ActionGroup;
@@ -12,7 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 
-class UsuariosTable
+class UsersTable
 {
     public static function configure(Table $table): Table
     {

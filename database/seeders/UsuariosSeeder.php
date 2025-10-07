@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Usuarios;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class UsuariosSeeder extends Seeder
@@ -16,10 +16,10 @@ class UsuariosSeeder extends Seeder
     {
 
         // Crear usuarios de ejemplo
-        $admin = Usuarios::create([
+        $admin = User::create([
             'name' => 'Alex Gary',
             'ap_paterno' => 'Baptista',
-            'ap_materno' => 'Farinas',
+            'ap_materno' => 'Fariñas',
             'ci' => '6102438',
             'celular' => '67852701',
             'genero' => 'M',

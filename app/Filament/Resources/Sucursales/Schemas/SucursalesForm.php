@@ -14,18 +14,26 @@ class SucursalesForm
         return $schema
             ->components([
                 TextInput::make('nombre')
+                    ->placeholder('Nombre de la sucursal')
                     ->required(),
                 Textarea::make('descripcion')
+                    ->label('Descripción')
+                    ->placeholder('Descripción de la sucursal')
                     ->columnSpanFull(),
-                TextInput::make('direccion'),
+                TextInput::make('direccion')
+                    ->label('Dirección')
+                    ->placeholder('Dirección de la sucursal'),
                 TextInput::make('telefono')
+                    ->label('Teléfono')
+                    ->placeholder('Teléfono de la sucursal')
                     ->tel(),
                 TextInput::make('capital_actual')
+                    ->placeholder('Capital de la sucursal')
                     ->required()
                     ->numeric()
-                    ->default(0)
                     ->suffix('Bs'),
                 Select::make('departamento_id')
+                    ->placeholder('Seleccione el departamento')
                     ->label('Departamento')
                     ->searchable()
                     ->preload()

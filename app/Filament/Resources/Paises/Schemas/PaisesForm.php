@@ -12,6 +12,8 @@ class PaisesForm
         return $schema
             ->components([
                 TextInput::make('nombre')
+                    ->label('Nombre')
+                    ->placeholder('Nombre del país')
                     ->required(),
             ]);
     }

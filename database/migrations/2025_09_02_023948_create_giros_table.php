@@ -25,8 +25,8 @@ return new class extends Migration
             //campos de llaves foraneas
             $table->foreignId("sucursal_origen_id")->nullable()->constrained("sucursales")->nullOnDelete();
             $table->foreignId("sucursal_destino_id")->nullable()->constrained("sucursales")->nullOnDelete();
-            $table->foreignId("usuario_envio_id")->nullable()->constrained("usuarios")->nullOnDelete();
-            $table->foreignId("usuario_entrega_id")->nullable()->constrained("usuarios")->nullOnDelete();
+            $table->foreignId("usuario_envio_id")->nullable()->constrained("users")->nullOnDelete();
+            $table->foreignId("usuario_entrega_id")->nullable()->constrained("users")->nullOnDelete();
             $table->foreignId("estado_id")->nullable()->constrained("estado__giros")->nullOnDelete();
 
             //campos de auditoria

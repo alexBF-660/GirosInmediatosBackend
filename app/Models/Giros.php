@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -70,53 +71,57 @@ class Giros extends Model
                 $giro->sucursalDestino->capital_actual += $giro->monto_enviado;
                 $giro->sucursalDestino->save();
             }
+
         });
 
         // Cuando se actualiza un giro
         static::updated(function ($giro) {
-            $originalMonto = $giro->getOriginal('monto_enviado');
-            $originalOrigen = $giro->getOriginal('sucursal_origen_id');
-            $originalDestino = $giro->getOriginal('sucursal_destino_id');
+            
+            $ENTREGADO_ID = 1;
+            $NULO_ID = 3;
+            $REEMITIDO_ID = 4;
+            $REVERTIDO_ID = 5;
 
-            // 1. Revertir el movimiento anterior
-            if ($originalOrigen && $originalOrigen != $giro->sucursal_origen_id) {
-                // Si cambió de sucursal origen
-                $oldSucursalOrigen = \App\Models\Sucursales::find($originalOrigen);
-                if ($oldSucursalOrigen) {
-                    $oldSucursalOrigen->capital_actual += $originalMonto;
-                    $oldSucursalOrigen->save();
-                }
-            } else {
-                // Misma sucursal origen → devolver el monto anterior
-                if ($giro->sucursalOrigen) {
-                    $giro->sucursalOrigen->capital_actual += $originalMonto;
-                    $giro->sucursalOrigen->save();
-                }
+            $originalEstado = $giro->getOriginal('estado_id');
+
+            if ($originalEstado != $ENTREGADO_ID && $giro->estado_id == $ENTREGADO_ID) {
+                $giro->sucursalDestino->capital_actual -= $giro->monto_enviado;
+                $giro->sucursalDestino->save();
             }
 
-            if ($originalDestino && $originalDestino != $giro->sucursal_destino_id) {
-                // Si cambió de sucursal destino
-                $oldSucursalDestino = \App\Models\Sucursales::find($originalDestino);
-                if ($oldSucursalDestino) {
-                    $oldSucursalDestino->capital_actual -= $originalMonto;
-                    $oldSucursalDestino->save();
-                }
-            } else {
-                // Misma sucursal destino → revertir monto anterior
-                if ($giro->sucursalDestino) {
-                    $giro->sucursalDestino->capital_actual -= $originalMonto;
-                    $giro->sucursalDestino->save();
-                }
-            }
-
-            // 2. Aplicar el nuevo movimiento
-            if ($giro->sucursalOrigen) {
-                $giro->sucursalOrigen->capital_actual -= $giro->monto_enviado;
+            if($originalEstado != $NULO_ID && $giro->estado_id == $NULO_ID){
+                //revertir sucursal origen
+                $giro->sucursalOrigen->capital_actual += $giro->monto_enviado;
                 $giro->sucursalOrigen->save();
+
+                //revertir sucursal destino
+                $giro->sucursalDestino->capital_actual -= $giro->monto_enviado;
+                $giro->sucursalDestino->save();
             }
 
-            if ($giro->sucursalDestino) {
+            if($originalEstado != $REEMITIDO_ID && $giro->estado_id == $REEMITIDO_ID){
+
+                //restaurar monto de sucursal actual
+                $montoOriginal = $giro->getOriginal('monto_enviado');
+                $sucursalDestinoID = $giro->getOriginal('sucursal_destino_id');
+                $sucursalDestinoActual = \App\Models\Sucursales::find($sucursalDestinoID);
+
+                $sucursalDestinoActual->capital_actual -= $montoOriginal;
+                $sucursalDestinoActual->save();
+
+                //reenviar a la nueva sucursal
                 $giro->sucursalDestino->capital_actual += $giro->monto_enviado;
+                $giro->sucursalDestino->save();
+            }
+
+            if($originalEstado != $REVERTIDO_ID && $giro->estado_id == $REVERTIDO_ID){
+                //revertir sucursal origen
+                $montoOriginal = $giro->getOriginal('monto_enviado');
+                $giro->sucursalOrigen->capital_actual += $giro->monto_enviado;
+                $giro->sucursalOrigen->save();
+
+                //revertir sucursal destino
+                $giro->sucursalDestino->capital_actual -= $giro->montoOriginal;
                 $giro->sucursalDestino->save();
             }
         });

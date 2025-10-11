@@ -17,6 +17,9 @@ class GirosTable
     {
         return $table
             ->columns([
+                TextColumn::make('numero')
+                    ->label('N°')
+                    ->rowIndex(),
                 TextColumn::make('id')
                     ->label('N° Guia')
                     ->searchable(),

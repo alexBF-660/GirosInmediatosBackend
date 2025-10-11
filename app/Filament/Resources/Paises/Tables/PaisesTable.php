@@ -16,6 +16,9 @@ class PaisesTable
     {
         return $table
             ->columns([
+                TextColumn::make('numero')
+                    ->label('N°')
+                    ->rowIndex(),
                 TextColumn::make('nombre')
                     ->label('País')
                     ->searchable(),

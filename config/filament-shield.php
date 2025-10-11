@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Shield Resource
@@ -120,9 +119,12 @@ return [
         'merge' => true,
         'generate' => true,
         'methods' => [
+            'view', 'create', 'update', 'delete',
+        ],
+/*         'methods' => [
             'viewAny', 'view', 'create', 'update', 'delete', 'restore',
             'forceDelete', 'forceDeleteAny', 'restoreAny', 'replicate', 'reorder',
-        ],
+        ], */
         'single_parameter_methods' => [
             'viewAny',
             'create',

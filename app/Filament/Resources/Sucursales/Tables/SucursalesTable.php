@@ -17,15 +17,19 @@ class SucursalesTable
     {
         return $table
             ->columns([
+                TextColumn::make('numero')
+                    ->label('N°')
+                    ->rowIndex(),
                 TextColumn::make('nombre')
                     ->label('Sucursal')
                     ->searchable(),
-                
                 TextColumn::make('capital_actual')
                     ->label('Capital Actual')
                     ->numeric()
                     ->sortable(),
-
+                TextColumn::make('descripcion')
+                    ->label('Descripción')
+                    ->searchable(),
                 TextColumn::make('direccion')
                     ->label('Dirección')
                     ->searchable(),

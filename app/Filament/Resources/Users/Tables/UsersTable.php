@@ -18,6 +18,9 @@ class UsersTable
     {
         return $table
             ->columns([
+                TextColumn::make('numero')
+                    ->label('N°')
+                    ->rowIndex(),
                 ImageColumn::make('foto')
                     ->label('Foto')
                     ->size(50)
@@ -47,10 +50,14 @@ class UsersTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('email')
-                    ->label('correo')
+                    ->label('Correo')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 TextColumn::make('sucursal.nombre')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('roles.name')
+                    ->label('Rol')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')

@@ -19,6 +19,9 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use App\Filament\Resources\Sucursales\Widgets\SucursalCapitalOverview;
+use App\Filament\Resources\Giros\Widgets\GirosToDayOverview;
+use App\Filament\Resources\Giros\Widgets\GirostoMothOverview;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -42,7 +45,10 @@ class AdminPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
             ])
             ->widgets([
-                AccountWidget::class,
+                SucursalCapitalOverview::class,
+                GirosToDayOverview::class,
+                GirostoMothOverview::class,
+
             ])
             ->middleware([
                 EncryptCookies::class,

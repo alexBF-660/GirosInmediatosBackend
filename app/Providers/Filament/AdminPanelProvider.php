@@ -45,9 +45,9 @@ class AdminPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
             ])
             ->widgets([
-                SucursalCapitalOverview::class,
+                //SucursalCapitalOverview::class,
+                //GirostoMothOverview::class,
                 GirosToDayOverview::class,
-                GirostoMothOverview::class,
 
             ])
             ->middleware([

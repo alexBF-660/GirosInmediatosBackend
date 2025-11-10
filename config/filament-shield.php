@@ -121,18 +121,18 @@ return [
         'methods' => [
             'view', 'create', 'update', 'delete',
         ],
-/*         'methods' => [
+        'methods' => [
             'viewAny', 'view', 'create', 'update', 'delete', 'restore',
             'forceDelete', 'forceDeleteAny', 'restoreAny', 'replicate', 'reorder',
-        ], */
-        'single_parameter_methods' => [
+        ], 
+/*         'single_parameter_methods' => [
             'viewAny',
             'create',
             'deleteAny',
             'forceDeleteAny',
             'restoreAny',
             'reorder',
-        ],
+        ], */
     ],
 
     /*

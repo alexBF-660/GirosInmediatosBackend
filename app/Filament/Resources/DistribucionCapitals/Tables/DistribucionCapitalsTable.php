@@ -14,10 +14,12 @@ class DistribucionCapitalsTable
     {
         return $table
             ->columns([
-                TextColumn::make('sucursal_origen_id')
+                TextColumn::make('sucursalOrigen.nombre')
+                    ->label('Sucursal origen')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('sucursal_destino_id')
+                TextColumn::make('sucursalDestino.nombre')
+                    ->label('Sucursal destino')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('monto')
@@ -27,7 +29,13 @@ class DistribucionCapitalsTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('tipo')
-                    ->numeric()
+                    ->label('Tipo')
+                    ->formatStateUsing(function ($state) {
+                        return [
+                            '1' => 'Distribución regular',
+                            '2' => 'Redistribución',
+                        ][$state] ?? 'Desconocido';
+                    })
                     ->sortable(),
                 TextColumn::make('observacion')
                     ->searchable(),

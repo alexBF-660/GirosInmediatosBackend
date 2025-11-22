@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
@@ -56,5 +57,25 @@ class UserResource extends Resource
             'create' => CreateUser::route('/create'),
             'edit' => EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+
+        // Roles que solo ven los los usuaios de su sucursal
+        if ($user->hasRole('Operador de sucursal')) 
+        {
+            return parent::getEloquentQuery()
+                ->where('id', $user->id);
+        }
+
+        if($user->hasRole('Gerente de sucursal')){
+            return parent::getEloquentQuery()
+                ->where('sucursal_id', $user->sucursal_id);
+        }
+
+        // Cualquier otro rol → por seguridad, también filtra por sucursal
+        return parent::getEloquentQuery();
     }
 }

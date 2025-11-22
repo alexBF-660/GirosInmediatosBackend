@@ -20,6 +20,11 @@ class MovimientoCapitalResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Distribución de capital';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return MovimientoCapitalForm::configure($schema);

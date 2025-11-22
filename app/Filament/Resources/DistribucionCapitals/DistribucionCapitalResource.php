@@ -22,6 +22,11 @@ class DistribucionCapitalResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'no';
 
+    public static function getNavigationGroup(): ?string
+    {
+        return 'Distribución de capital';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return DistribucionCapitalForm::configure($schema);

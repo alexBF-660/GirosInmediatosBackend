@@ -13,6 +13,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+
 
 class SucursalesResource extends Resource
 {
@@ -56,5 +58,21 @@ class SucursalesResource extends Resource
             'create' => CreateSucursales::route('/create'),
             'edit' => EditSucursales::route('/{record}/edit'),
         ];
+    }
+    public static function getEloquentQuery(): Builder
+    {
+        $user = auth()->user();
+
+        // Roles que solo ven los giros de SU sucursal de origen
+        if (
+            $user->hasRole('Operador de sucursal') ||
+            $user->hasRole('Gerente de sucursal')
+        ) {
+            return parent::getEloquentQuery()
+                ->where('id', $user->sucursal_id);
+        }
+
+        // Cualquier otro rol → por seguridad, también filtra por sucursal
+        return parent::getEloquentQuery();
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\MovimientoCapital;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Database\Eloquent\Model;
@@ -60,19 +61,90 @@ class Giros extends Model
     {
         //cuando se crea un giro
         static::created(function ($giro) {
-            // Descuento en la sucursal de origen
-            if ($giro->sucursalOrigen) {
-                $giro->sucursalOrigen->capital_actual -= $giro->monto_enviado;
-                $giro->sucursalOrigen->save();
-            }
 
-            // Suma en la sucursal de destino
-            if ($giro->sucursalDestino) {
-                $giro->sucursalDestino->capital_actual += $giro->monto_enviado;
-                $giro->sucursalDestino->save();
-            }
+        // 1. Actualizar capital sucursal origen
+        if ($giro->sucursalOrigen) {
+            $giro->sucursalOrigen->capital_actual -= $giro->monto_enviado;
+            $giro->sucursalOrigen->save();
+        }
 
-        });
+        // 2. Actualizar capital sucursal destino
+        if ($giro->sucursalDestino) {
+            $giro->sucursalDestino->capital_actual += $giro->monto_enviado;
+            $giro->sucursalDestino->save();
+        }
+
+
+        // ============================================================
+        // MOVIMIENTO CAPITAL ORIGEN
+        // ============================================================
+
+        $movOrigen = MovimientoCapital::whereDate('fecha', today())
+            ->where('sucursal_id', $giro->sucursal_origen_id)
+            ->first(); // <-- CORREGIDO (first())
+
+        if (!$movOrigen) {
+
+            // obtener último capital
+            $ultimo = MovimientoCapital::where('sucursal_id', $giro->sucursal_origen_id)
+                ->orderBy('fecha', 'desc')
+                ->first();
+
+            $capitalAnterior = $ultimo?->capital_actual ?? 0;
+
+            $movOrigen = MovimientoCapital::create([
+                'fecha'          => today(),
+                'sucursal_id'    => $giro->sucursal_origen_id,
+                'total_enviado'  => $giro->monto_enviado,
+                'total_recibido' => 0,
+                'balance_dia'    => 0 - $giro->monto_enviado,
+                'capital_inicial'=> $capitalAnterior,
+                'capital_actual' => $capitalAnterior - $giro->monto_enviado,
+            ]);
+
+        } else {
+
+            $movOrigen->total_enviado += $giro->monto_enviado;
+            $movOrigen->balance_dia = $movOrigen->total_recibido - $movOrigen->total_enviado;
+            $movOrigen->capital_actual -= $giro->monto_enviado;
+            $movOrigen->save();
+        }
+
+
+        // ============================================================
+        // MOVIMIENTO CAPITAL DESTINO
+        // ============================================================
+
+        $movDestino = MovimientoCapital::whereDate('fecha', today())
+            ->where('sucursal_id', $giro->sucursal_destino_id)
+            ->first(); // <-- CORREGIDO
+
+        if (!$movDestino) {
+
+            $ultimo = MovimientoCapital::where('sucursal_id', $giro->sucursal_destino_id)
+                ->orderBy('fecha', 'desc')
+                ->first();
+
+            $capitalAnterior = $ultimo?->capital_actual ?? 0;
+
+            $movDestino = MovimientoCapital::create([
+                'fecha'          => today(),
+                'sucursal_id'    => $giro->sucursal_destino_id,
+                'total_enviado'  => 0,
+                'total_recibido' => $giro->monto_enviado,
+                'balance_dia'    => $giro->monto_enviado - 0,
+                'capital_inicial'=> $capitalAnterior,
+                'capital_actual' => $capitalAnterior + $giro->monto_enviado,
+            ]);
+
+        } else {
+
+            $movDestino->total_recibido += $giro->monto_enviado;
+            $movDestino->balance_dia = $movDestino->total_recibido - $movDestino->total_enviado;
+            $movDestino->capital_actual += $giro->monto_enviado;
+            $movDestino->save();
+        }
+    });
 
         // Cuando se actualiza un giro
         static::updated(function ($giro) {

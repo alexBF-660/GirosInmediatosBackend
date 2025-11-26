@@ -18,9 +18,9 @@ class DistribucionCapitalResource extends Resource
 {
     protected static ?string $model = DistribucionCapital::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
-    protected static ?string $recordTitleAttribute = 'no';
+    protected static ?string $recordTitleAttribute = 'Distribución de Capital';
 
     public static function getNavigationGroup(): ?string
     {

@@ -10,6 +10,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Actions\Action;
 
 class GirosTable
 {
@@ -121,6 +122,12 @@ class GirosTable
                 ActionGroup::make([
                     EditAction::make(),
                     DeleteAction::make(),
+                    Action::make('imprimir')
+                        ->label('Imprimir')
+                        ->icon('heroicon-o-printer')
+                        ->color('info')
+                        ->url(fn ($record) => route('giroRecibo.print', $record->id)) // Ruta al PDF
+                        ->openUrlInNewTab(),
                 ]),
             ])
             ->toolbarActions([

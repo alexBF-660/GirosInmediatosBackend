@@ -126,7 +126,7 @@ class DistribucionCapitalForm
                                         ["fecha" => "2025-11-13", "total_enviado" => 2700, "total_recibido" => 3200, "balance_dia" => 500, "capital_inicial" => 26500, "capital_actual" => 27000],
                                         ["fecha" => "2025-11-14", "total_enviado" => 2500, "total_recibido" => 3000, "balance_dia" => 500, "capital_inicial" => 27000, "capital_actual" => 27500],
                                         ["fecha" => "2025-11-17", "total_enviado" => 2800, "total_recibido" => 3300, "balance_dia" => 500, "capital_inicial" => 27500, "capital_actual" => 28000],
-                                        ["fecha" => "2025-11-18", "total_enviado" => 2800, "total_recibido" => 3300, "balance_dia" => 500, "capital_inicial" => 25000, "capital_actual" => 25500],
+                                        ["fecha" => "2025-12-04", "total_enviado" => 2800, "total_recibido" => 3300, "balance_dia" => 500, "capital_inicial" => 25000, "capital_actual" => 25500],
                                 ];
 
                                 $payload = [

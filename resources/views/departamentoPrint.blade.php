@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reporte de Usuarios</title>
+    <title>Reporte de departamentos</title>
 
     <style>
         /* Fuente general */
@@ -72,30 +72,22 @@
         <thead>
             <tr>
                 <th>N°</th>
-                <th>Nombre completo</th>
-                <th>Correo electronico</th>
-                <th>Número de carnet</th>
-                <th>Celular</th>
-                <th>Genero</th>
-                <th>Sucursal</th>
+                <th>Departamento</th>
+                <th>País</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($users as $index => $user)
+            @foreach ($departamentos as $index => $departamento)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $user->name }} {{ $user->ap_paterno }} {{ $user->ap_materno }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->ci }}</td>
-                    <td>{{ $user->celular }}</td>
-                    <td>{{ $user->genero }}</td>
-                    <<td>{{ $user->sucursal->nombre }}</td>
+                    <td>{{ $departamento->nombre }} </td>
+                    <td>{{ $departamento->paises->nombre }}</td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="7" class="text-center">Total de usuarios registrados: {{ count($users) }}</th>
+                <th colspan="3" class="text-center">Total de departamentos registrados: {{ count($departamentos) }}</th>
             </tr>
     </table>
 

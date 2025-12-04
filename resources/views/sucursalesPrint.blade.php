@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reporte de Usuarios</title>
+    <title>Reporte de sucursales</title>
 
     <style>
         /* Fuente general */
@@ -72,30 +72,32 @@
         <thead>
             <tr>
                 <th>N°</th>
-                <th>Nombre completo</th>
-                <th>Correo electronico</th>
-                <th>Número de carnet</th>
-                <th>Celular</th>
-                <th>Genero</th>
                 <th>Sucursal</th>
+                <th>Descripción</th>
+                <th>Dirección</th>
+                <th>Telefono</th>
+                <th>Capital actual</th>
+                <th>Departamento</th>
+                <th>Usuarios</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($users as $index => $user)
+            @foreach ($sucursales as $index => $estado)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $user->name }} {{ $user->ap_paterno }} {{ $user->ap_materno }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->ci }}</td>
-                    <td>{{ $user->celular }}</td>
-                    <td>{{ $user->genero }}</td>
-                    <<td>{{ $user->sucursal->nombre }}</td>
+                    <td>{{ $estado->nombre }} </td>
+                    <td>{{ $estado->descripcion }}</td>
+                    <td>{{ $estado->direccion }}</td>
+                    <td>{{ $estado->telefono }}</td>
+                    <td>{{ $estado->capital_actual }} Bs.-</td>
+                    <td>{{ $estado->departamento->nombre }}</td>
+                    <td>{{ count($estado->usuarios) }}</td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="7" class="text-center">Total de usuarios registrados: {{ count($users) }}</th>
+                <th colspan="8" class="text-center">Total de sucursales registradas: {{ count($sucursales) }}</th>
             </tr>
     </table>
 

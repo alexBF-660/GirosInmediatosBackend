@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Reporte de Usuarios</title>
+    <title>Reporte de Paises</title>
 
     <style>
         /* Fuente general */
@@ -72,30 +72,28 @@
         <thead>
             <tr>
                 <th>N°</th>
-                <th>Nombre completo</th>
-                <th>Correo electronico</th>
-                <th>Número de carnet</th>
-                <th>Celular</th>
-                <th>Genero</th>
+                <th>Fecha</th>
+                <th>Tipo</th>
                 <th>Sucursal</th>
+                <th>Monto</th>
+                <th>Descripción</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($users as $index => $user)
+            @foreach ($movimientos as $index => $movimiento)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $user->name }} {{ $user->ap_paterno }} {{ $user->ap_materno }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->ci }}</td>
-                    <td>{{ $user->celular }}</td>
-                    <td>{{ $user->genero }}</td>
-                    <<td>{{ $user->sucursal->nombre }}</td>
+                    <td>{{ $movimiento->fecha }}</td>
+                    <td>{{ $movimiento->tipo == 1 ? "Ingreso" : "Retiro"}}</td>
+                    <td>{{ $movimiento->sucursal->nombre }}</td>
+                    <td>{{ $movimiento->monto }} Bs.-</td>
+                    <td>{{ $movimiento->descripcion }}</td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="7" class="text-center">Total de usuarios registrados: {{ count($users) }}</th>
+                <th colspan="6" class="text-center">Total de movimientos registrados: {{ count($movimientos) }}</th>
             </tr>
     </table>
 

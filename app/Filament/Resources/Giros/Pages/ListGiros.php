@@ -7,6 +7,12 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Notifications\Notification;
 use App\Models\Sucursales;
+use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\DatePicker;
 
 
 class ListGiros extends ListRecords
@@ -16,6 +22,87 @@ class ListGiros extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+
+            Action::make('imprimirReporteFechas')
+                ->label('Imprimir Reporte por Fechas')
+                ->color('info')
+                ->icon('heroicon-o-printer')
+                ->form(function () {
+                    $user = Auth::user();
+
+                    if ($user->hasRole('Gerente de sucursal')) {
+                        // Select oculto con sucursal fija del gerente
+                        return [
+                            Hidden::make('sucursal_id')
+                                ->default($user->sucursal_id)
+                                ->required(),
+                            DatePicker::make('fecha_inicio')
+                                ->label('Seleccione la fecha de inicio'),
+                            DatePicker::make('fecha_fin')
+                                ->label('Seleccione la fecha de fin'),
+                        ];
+                    } else {
+                        // Usuarios con otros roles → select con todas las sucursales + opción "Todos"
+                        return [
+                            Select::make('sucursal_id')
+                                ->label('Sucursal')
+                                ->options([0 => 'Todos'] + \App\Models\Sucursales::pluck('nombre', 'id')->toArray())
+                                ->searchable()
+                                ->preload()
+                                ->required(),
+                            DatePicker::make('fecha_inicio')
+                                ->label('Seleccione la fecha de inicio'),
+                            DatePicker::make('fecha_fin')
+                                ->label('Seleccione la fecha de fin'),
+                        ];
+                    }
+                })
+                ->action(function (array $data) {
+                    // Redirige a la ruta del PDF según el sucursal_id seleccionado o del gerente
+                    return redirect()->away(
+                        route('giroRango.print', $data)
+                    );
+                })
+                ->openUrlInNewTab(),
+
+            Action::make('imprimirReporteDiario')
+                ->label('Imprimir Reporte Diario')
+                ->color('danger')
+                ->icon('heroicon-o-printer')
+                ->form(function () {
+                    $user = Auth::user();
+
+                    if ($user->hasRole('Gerente de sucursal')) {
+                        // Select oculto con sucursal fija del gerente
+                        return [
+                            Hidden::make('sucursal_id')
+                                ->default($user->sucursal_id)
+                                ->required(),
+                            DatePicker::make('fecha')
+                                ->label('Seleccione la fecha del reporte'),
+                        ];
+                    } else {
+                        // Usuarios con otros roles → select con todas las sucursales + opción "Todos"
+                        return [
+                            Select::make('sucursal_id')
+                                ->label('Sucursal')
+                                ->options([0 => 'Todos'] + \App\Models\Sucursales::pluck('nombre', 'id')->toArray())
+                                ->searchable()
+                                ->preload()
+                                ->required(),
+                            DatePicker::make('fecha')
+                                ->label('Seleccione la fecha del reporte'),
+                        ];
+                    }
+                })
+                ->action(function (array $data) {
+                    // Redirige a la ruta del PDF según el sucursal_id seleccionado o del gerente
+                    return redirect()->away(
+                        route('giroDiario.print', $data)
+                    );
+                })
+                ->openUrlInNewTab(),
+
             CreateAction::make(),
         ];
     }

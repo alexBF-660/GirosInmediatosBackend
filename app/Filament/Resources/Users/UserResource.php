@@ -23,6 +23,9 @@ class UserResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $navigationLabel = 'Usuarios';
+
+
     public static function getNavigationGroup(): ?string
     {
         return 'Menu Principal';

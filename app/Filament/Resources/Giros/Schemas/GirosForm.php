@@ -7,9 +7,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\label;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
-use Carbon\Carbon;
 use Filament\Facades\Filament;
+use Filament\Forms\Get;
 use App\Models\User;
+use Carbon\Carbon;
 
 class GirosForm
 {
@@ -33,12 +34,38 @@ class GirosForm
                     ->label('Monto')
                     ->required()
                     ->numeric()
-                    ->maxValue(99999)
                     ->minValue(0)
                     ->suffix('Bs.')
                     ->disabled(fn ($state, $record) => $record && !Filament::auth()->user()->hasRole('super_admin') == 1 && in_array($record->estado_id, [1, 3]))
                     ->placeholder('Ej: 100.00')
-                    ->rule('regex:/^\d+(\.\d{1,2})?$/'),
+                    ->rules(function ($get, $record) {
+                        if($record){
+                            $capital = $record->sucursalOrigen->capital_actual ?? 0;
+                        }
+                        else{
+                            $sucursalId = $get('sucursal_origen_id');
+                            $capital = \App\Models\Sucursales::find($sucursalId)?->capital_actual ?? 0;
+                        }
+                        return [
+                            'regex:/^\d+(\.\d{1,2})?$/',
+                            'numeric',
+                            'min:0',
+                            'max:' . min(99999, $capital),
+                        ];
+                    })
+                    ->helperText(function ($get, $record) {
+
+                        if ($record) {
+                            $capital = $record->sucursalOrigen->capital_actual ?? 0;
+                        } else {
+                            $sucursalId = $get('sucursal_origen_id');
+                            $capital = \App\Models\Sucursales::find($sucursalId)?->capital_actual ?? 0;
+                        }
+
+                        return 'Máximo permitido: ' .
+                            number_format(min(99999, $capital), 2) .
+                            ' Bs.';
+                    }),
 
                 TextInput::make('comision_envio')
                     ->label('Comision')
@@ -73,6 +100,7 @@ class GirosForm
                     ->disabled(fn ($state, $record) => $record && !Filament::auth()->user()->hasRole('super_admin') == 1 && in_array($record->estado_id, [1, 3]))
                     ->searchable()
                     ->preload()
+                    ->live()
                     ->required(),
 
                 Select::make('sucursal_destino_id')

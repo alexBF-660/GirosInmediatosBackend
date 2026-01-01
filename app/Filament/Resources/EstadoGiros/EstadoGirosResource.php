@@ -20,7 +20,9 @@ class EstadoGirosResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static ?string $recordTitleAttribute = 'nombre';
+    protected static ?string $recordTitleAttribute = 'Estados de Giros';
+    protected static ?string $navigationLabel = 'Estados de Giros';
+
 
     public static function getNavigationGroup(): ?string
     {

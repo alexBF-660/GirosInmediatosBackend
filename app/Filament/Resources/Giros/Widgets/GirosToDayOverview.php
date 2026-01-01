@@ -15,7 +15,7 @@ class GirosToDayOverview extends StatsOverviewWidget
     protected function getStats(): array
     {
         // Fecha fija de ejemplo
-        $fecha = '2025-10-11';
+        $fecha = '2025-12-04';
 
         // Obtenemos todas las sucursales
         $sucursales = Sucursales::select('id', 'nombre')->get();

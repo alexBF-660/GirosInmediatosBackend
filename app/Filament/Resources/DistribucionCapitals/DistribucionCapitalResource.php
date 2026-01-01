@@ -21,6 +21,7 @@ class DistribucionCapitalResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
     protected static ?string $recordTitleAttribute = 'Distribución de Capital';
+    protected static ?string $navigationLabel = 'Distribución de Capital';
 
     public static function getNavigationGroup(): ?string
     {

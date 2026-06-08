@@ -14,10 +14,10 @@ Route::get('print/usuariosPrint/{sucursal_id}', [ReportesPdfController::class, '
 Route::get('print/giroReciboPrint/{id}', [ReportesPdfController::class, 'giroReciboPrint'])->name('giroRecibo.print');
 
 //rutas para imprimir reportes de giros por dia
-Route::get('print/giroReporteDiaPrint/{sucursal_id}&{fecha}', [ReportesPdfController::class, 'giroReporteDiaPrint'])->name('giroDiario.print');
+Route::get('print/giroReporteDiaPrint/{sucursal_id}/{fecha}', [ReportesPdfController::class, 'giroReporteDiaPrint'])->name('giroDiario.print');
 
-//rutas para imprimir reportes de giros por dia
-Route::get('print/giroReporteRangoPrint/{sucursal_id}&{fecha_inicio}&{fecha_fin}', [ReportesPdfController::class, 'giroReporteRangoPrint'])->name('giroRango.print');
+//rutas para imprimir reportes de giros por rango de fechas
+Route::get('print/giroReporteRangoPrint/{sucursal_id}/{fecha_inicio}/{fecha_fin}', [ReportesPdfController::class, 'giroReporteRangoPrint'])->name('giroRango.print');
 
 //rutas para imprimir reportes de paises
 Route::get('print/paisesPrint', [ReportesPdfController::class, 'paisesPrint'])->name('paisesPrint.print');

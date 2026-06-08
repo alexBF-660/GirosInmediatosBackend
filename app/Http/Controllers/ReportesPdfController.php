@@ -42,33 +42,54 @@ class ReportesPdfController extends Controller
         return $pdf->stream('giro_recibo_' . $giro->id . '.pdf');
     }
 
-    public function giroReporteDiaPrint(int $sucursal_id, String $fecha){
-        
-        if($sucursal_id != 0){
-            $girosEnviados = Giros::where('sucursal_origen_id', $sucursal_id)
-            ->whereDate('fecha_envio', $fecha)
-            ->get();
+    public function giroReporteDiaPrint(int $sucursal_id, string $fecha)
+    {
+        $fecha = Carbon::parse($fecha)->toDateString();
+        $giroRelations = ['sucursalOrigen:id,nombre', 'sucursalDestino:id,nombre', 'estado:id,nombre'];
 
-            $girosRecibidos = Giros::where('sucursal_destino_id', $sucursal_id)
-            ->whereDate('fecha_envio', $fecha)
-            ->get();
+        if ($sucursal_id != 0) {
+            $girosEnviados = Giros::query()
+                ->with($giroRelations)
+                ->where('sucursal_origen_id', $sucursal_id)
+                ->whereDate('fecha_envio', $fecha)
+                ->orderBy('id')
+                ->get();
 
-            $titulo = "Reporte de Diario de Giros - ". Sucursales::find($sucursal_id)->nombre;
+            $girosRecibidos = Giros::query()
+                ->with($giroRelations)
+                ->where('sucursal_destino_id', $sucursal_id)
+                ->whereDate('fecha_envio', $fecha)
+                ->orderBy('id')
+                ->get();
 
-            $movimientoCapital = MovimientoCapital::where('sucursal_id', $sucursal_id)
-            ->whereDate('created_at', $fecha)
-            ->get();
-        }else{
-            $girosEnviados = Giros::whereDate('fecha_envio', $fecha)
-            ->get();
+            $titulo = 'Reporte de Diario de Giros - ' . Sucursales::find($sucursal_id)?->nombre;
 
-            $girosRecibidos = Giros::whereDate('fecha_envio', $fecha)
-            ->get();
+            $movimientoCapital = MovimientoCapital::query()
+                ->with('sucursal:id,nombre')
+                ->where('sucursal_id', $sucursal_id)
+                ->whereDate('fecha', $fecha)
+                ->orderBy('id')
+                ->get();
+        } else {
+            $girosEnviados = Giros::query()
+                ->with($giroRelations)
+                ->whereDate('fecha_envio', $fecha)
+                ->orderBy('id')
+                ->get();
 
-            $titulo = "Reporte de Diario de Giros - Todas las Sucursales";
+            $girosRecibidos = Giros::query()
+                ->with($giroRelations)
+                ->whereDate('fecha_envio', $fecha)
+                ->orderBy('id')
+                ->get();
 
-            $movimientoCapital = MovimientoCapital::whereDate('fecha', $fecha)
-            ->get();
+            $titulo = 'Reporte de Diario de Giros - Todas las Sucursales';
+
+            $movimientoCapital = MovimientoCapital::query()
+                ->with('sucursal:id,nombre')
+                ->whereDate('fecha', $fecha)
+                ->orderBy('id')
+                ->get();
         }
 
         $totalEnviado = $girosEnviados->sum('monto_enviado');

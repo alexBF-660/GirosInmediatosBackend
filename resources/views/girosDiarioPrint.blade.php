@@ -76,7 +76,7 @@
                 </h3>
 
                 <span style="font-size: 11px; color: #555;">
-                    Fecha: {{ date('d/m/Y') }}
+                    Fecha del reporte: {{ \Illuminate\Support\Carbon::parse($fecha)->format('d/m/Y') }}
                 </span>
             </td>
         </tr>
@@ -279,7 +279,7 @@
                 @foreach ($movimientoCapital as $index => $movimiento)
                 <tr>
                     <td class="text-center">{{ $index+1 }}</td>
-                    <td>{{ $movimiento->fecha }}</td>
+                    <td>{{ $movimiento->fecha?->format('d/m/Y') ?? $movimiento->fecha }}</td>
                     <td>{{ $movimiento->sucursal->nombre }}</td>
                     <td>{{ $movimiento->total_enviado }}</td>
                     <td>{{ $movimiento->total_recibido }}</td>

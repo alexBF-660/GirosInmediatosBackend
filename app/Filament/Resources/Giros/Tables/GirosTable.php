@@ -7,10 +7,14 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 class GirosTable
 {
@@ -108,6 +112,39 @@ class GirosTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Filter::make('fecha_envio')
+                    ->label('Fecha de envío')
+                    ->schema([
+                        DatePicker::make('desde')
+                            ->label('Desde'),
+                        DatePicker::make('hasta')
+                            ->label('Hasta'),
+                    ])
+                    ->columns(2)
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['desde'] ?? null,
+                                fn (Builder $query, $date): Builder => $query->whereDate('fecha_envio', '>=', $date),
+                            )
+                            ->when(
+                                $data['hasta'] ?? null,
+                                fn (Builder $query, $date): Builder => $query->whereDate('fecha_envio', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['desde'] ?? null) {
+                            $indicators[] = 'Desde ' . Carbon::parse($data['desde'])->format('d/m/Y');
+                        }
+
+                        if ($data['hasta'] ?? null) {
+                            $indicators[] = 'Hasta ' . Carbon::parse($data['hasta'])->format('d/m/Y');
+                        }
+
+                        return $indicators;
+                    }),
                 SelectFilter::make('sucursal_origen_id')
                     ->label('Enviados desde')
                     ->relationship('sucursalOrigen', 'nombre'),

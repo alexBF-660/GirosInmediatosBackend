@@ -3,12 +3,14 @@
 namespace App\Filament\Resources\DistribucionCapitals\Schemas;
 
 use App\Models\Sucursales;
+use App\Models\MovimientoCapital;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Http;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\View;
 use Filament\Forms\Components\DatePicker;
@@ -71,99 +73,104 @@ class DistribucionCapitalForm
 
 
 
-                Section::make('Información de Sucursal')
-                    ->columns(1)
+                Grid::make([
+                    'default' => 1,
+                    'lg' => 3,
+                ])
+                    ->columnSpanFull()
                     ->schema([
-                        Select::make('sucursal_destino_id')
-                            ->label('Sucursal destino')
-                            ->relationship('sucursalDestino', 'nombre')
-                            ->searchable()
-                            ->preload()
-                            ->reactive()
-                            ->lazy()
-                            ->required()
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                if (!$state) {
-                                    $set('capital_destino', 0);
-                                    $set('predicciones', null);
-                                    return;
-                                }
+                        Section::make('Información de Sucursal')
+                            ->columns(1)
+                            ->columnSpan(['default' => 1, 'lg' => 1])
+                            ->schema([
+                                Select::make('sucursal_destino_id')
+                                    ->label('Sucursal destino')
+                                    ->relationship('sucursalDestino', 'nombre')
+                                    ->searchable()
+                                    ->preload()
+                                    ->reactive()
+                                    ->lazy()
+                                    ->required()
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        if (!$state) {
+                                            $set('capital_destino', 0);
+                                            $set('predicciones', null);
+                                            return;
+                                        }
 
-                                $sucursal = \App\Models\Sucursales::find($state);
-                                $set('capital_destino', $sucursal?->capital_actual ?? 0);
+                                        $sucursal = Sucursales::find($state);
+                                        $set('capital_destino', $sucursal?->capital_actual ?? 0);
 
-                                // Cargar dataset completo
-                                $data = [
-                                ["fecha" => "2025-10-01", "total_enviado" => 2500, "total_recibido" => 3000, "balance_dia" => 500, "capital_inicial" => 10000, "capital_actual" => 10500],
-                                        ["fecha" => "2025-10-02", "total_enviado" => 1800, "total_recibido" => 2500, "balance_dia" => 700, "capital_inicial" => 10500, "capital_actual" => 11200],
-                                        ["fecha" => "2025-10-03", "total_enviado" => 3000, "total_recibido" => 3200, "balance_dia" => 200, "capital_inicial" => 11200, "capital_actual" => 11400],
-                                        ["fecha" => "2025-10-06", "total_enviado" => 2200, "total_recibido" => 2800, "balance_dia" => 600, "capital_inicial" => 11400, "capital_actual" => 12000],
-                                        ["fecha" => "2025-10-07", "total_enviado" => 2600, "total_recibido" => 2900, "balance_dia" => 300, "capital_inicial" => 12000, "capital_actual" => 12300],
-                                        ["fecha" => "2025-10-08", "total_enviado" => 2800, "total_recibido" => 3100, "balance_dia" => 300, "capital_inicial" => 12300, "capital_actual" => 12600],
-                                        ["fecha" => "2025-10-09", "total_enviado" => 2000, "total_recibido" => 2500, "balance_dia" => 500, "capital_inicial" => 12600, "capital_actual" => 13100],
-                                        ["fecha" => "2025-10-10", "total_enviado" => 2200, "total_recibido" => 2600, "balance_dia" => 400, "capital_inicial" => 13100, "capital_actual" => 13500],
-                                        ["fecha" => "2025-10-13", "total_enviado" => 1900, "total_recibido" => 2400, "balance_dia" => 500, "capital_inicial" => 13500, "capital_actual" => 14000],
-                                        ["fecha" => "2025-10-14", "total_enviado" => 2100, "total_recibido" => 2800, "balance_dia" => 700, "capital_inicial" => 14000, "capital_actual" => 14700],
-                                        ["fecha" => "2025-10-15", "total_enviado" => 2400, "total_recibido" => 3000, "balance_dia" => 600, "capital_inicial" => 14700, "capital_actual" => 15300],
-                                        ["fecha" => "2025-10-16", "total_enviado" => 2500, "total_recibido" => 3200, "balance_dia" => 700, "capital_inicial" => 15300, "capital_actual" => 16000],
-                                        ["fecha" => "2025-10-17", "total_enviado" => 2300, "total_recibido" => 2900, "balance_dia" => 600, "capital_inicial" => 16000, "capital_actual" => 16600],
-                                        ["fecha" => "2025-10-20", "total_enviado" => 2700, "total_recibido" => 3500, "balance_dia" => 800, "capital_inicial" => 16600, "capital_actual" => 17400],
-                                        ["fecha" => "2025-10-21", "total_enviado" => 3000, "total_recibido" => 3700, "balance_dia" => 700, "capital_inicial" => 17400, "capital_actual" => 18100],
-                                        ["fecha" => "2025-10-22", "total_enviado" => 2600, "total_recibido" => 3100, "balance_dia" => 500, "capital_inicial" => 18100, "capital_actual" => 18600],
-                                        ["fecha" => "2025-10-23", "total_enviado" => 2800, "total_recibido" => 3400, "balance_dia" => 600, "capital_inicial" => 18600, "capital_actual" => 19200],
-                                        ["fecha" => "2025-10-24", "total_enviado" => 3100, "total_recibido" => 3600, "balance_dia" => 500, "capital_inicial" => 19200, "capital_actual" => 19700],
-                                        ["fecha" => "2025-10-27", "total_enviado" => 2900, "total_recibido" => 3300, "balance_dia" => 400, "capital_inicial" => 19700, "capital_actual" => 20100],
-                                        ["fecha" => "2025-10-28", "total_enviado" => 2700, "total_recibido" => 3100, "balance_dia" => 400, "capital_inicial" => 20100, "capital_actual" => 20500],
-                                        ["fecha" => "2025-10-29", "total_enviado" => 2600, "total_recibido" => 3200, "balance_dia" => 600, "capital_inicial" => 20500, "capital_actual" => 21100],
-                                        ["fecha" => "2025-10-30", "total_enviado" => 2800, "total_recibido" => 3400, "balance_dia" => 600, "capital_inicial" => 21100, "capital_actual" => 21700],
-                                        ["fecha" => "2025-10-31", "total_enviado" => 3000, "total_recibido" => 3600, "balance_dia" => 600, "capital_inicial" => 21700, "capital_actual" => 22300],
-                                        ["fecha" => "2025-11-03", "total_enviado" => 3100, "total_recibido" => 3800, "balance_dia" => 700, "capital_inicial" => 22300, "capital_actual" => 23000],
-                                        ["fecha" => "2025-11-04", "total_enviado" => 2800, "total_recibido" => 3300, "balance_dia" => 500, "capital_inicial" => 23000, "capital_actual" => 23500],
-                                        ["fecha" => "2025-11-05", "total_enviado" => 3000, "total_recibido" => 3700, "balance_dia" => 700, "capital_inicial" => 23500, "capital_actual" => 24200],
-                                        ["fecha" => "2025-11-06", "total_enviado" => 2700, "total_recibido" => 3100, "balance_dia" => 400, "capital_inicial" => 24200, "capital_actual" => 24600],
-                                        ["fecha" => "2025-11-07", "total_enviado" => 2600, "total_recibido" => 3000, "balance_dia" => 400, "capital_inicial" => 24600, "capital_actual" => 25000],
-                                        ["fecha" => "2025-11-10", "total_enviado" => 2800, "total_recibido" => 3300, "balance_dia" => 500, "capital_inicial" => 25000, "capital_actual" => 25500],
-                                        ["fecha" => "2025-11-11", "total_enviado" => 3000, "total_recibido" => 3500, "balance_dia" => 500, "capital_inicial" => 25500, "capital_actual" => 26000],
-                                        ["fecha" => "2025-11-12", "total_enviado" => 2900, "total_recibido" => 3400, "balance_dia" => 500, "capital_inicial" => 26000, "capital_actual" => 26500],
-                                        ["fecha" => "2025-11-13", "total_enviado" => 2700, "total_recibido" => 3200, "balance_dia" => 500, "capital_inicial" => 26500, "capital_actual" => 27000],
-                                        ["fecha" => "2025-11-14", "total_enviado" => 2500, "total_recibido" => 3000, "balance_dia" => 500, "capital_inicial" => 27000, "capital_actual" => 27500],
-                                        ["fecha" => "2025-11-17", "total_enviado" => 2800, "total_recibido" => 3300, "balance_dia" => 500, "capital_inicial" => 27500, "capital_actual" => 28000],
-                                        ["fecha" => "2025-12-04", "total_enviado" => 2800, "total_recibido" => 3300, "balance_dia" => 500, "capital_inicial" => 25000, "capital_actual" => 25500],
-                                ];
+                                        $movimientos = MovimientoCapital::query()
+                                            ->where('sucursal_id', $state)
+                                            ->orderByDesc('fecha')
+                                            ->limit(180)
+                                            ->get([
+                                                'fecha',
+                                                'total_enviado',
+                                                'total_recibido',
+                                                'balance_dia',
+                                                'capital_inicial',
+                                                'capital_actual',
+                                            ])
+                                            ->sortBy('fecha')
+                                            ->values();
 
-                                $payload = [
-                                    'sucursal_id' => $state,
-                                    'data' => $data,
-                                ];
+                                        if ($movimientos->count() < 35) {
+                                            $set('predicciones', [[
+                                                'fecha' => '-',
+                                                'prediccion_capital' => 'Se necesitan al menos 35 movimientos de capital para predecir.',
+                                            ]]);
 
-                                // Enviar POST a la API
-                                rescue(function () use ($payload, $set) {
-                                    $response = \Illuminate\Support\Facades\Http::timeout(5)
-                                        ->post('http://127.0.0.1:5000/predict', $payload);
+                                            return;
+                                        }
 
-                                    if ($response->successful()) {
-                                        $set('predicciones', $response->json('predicciones'));
-                                    } else {
-                                        $set('predicciones', [['fecha' => '-', 'prediccion_capital' => 'Error en la predicción']]);
-                                    }
-                                }, function () use ($set) {
-                                    $set('predicciones', [['fecha' => '-', 'prediccion_capital' => 'Error de conexión']]);
-                                });
-                            }),
+                                        $data = $movimientos->map(fn (MovimientoCapital $movimiento): array => [
+                                            'fecha' => $movimiento->fecha->format('Y-m-d'),
+                                            'total_enviado' => (float) $movimiento->total_enviado,
+                                            'total_recibido' => (float) $movimiento->total_recibido,
+                                            'balance_dia' => (float) $movimiento->balance_dia,
+                                            'capital_inicial' => (float) $movimiento->capital_inicial,
+                                            'capital_actual' => (float) $movimiento->capital_actual,
+                                        ])->values()->all();
 
-                        TextInput::make('capital_destino')
-                            ->label('Capital actual')
-                            ->disabled()
-                            ->numeric()
-                            ->default(0),
-                    ]),
+                                        $payload = [
+                                            'sucursal_id' => $state,
+                                            'data' => $data,
+                                        ];
 
-                Section::make('Prediccion de Capital y Detalles de Distribución')
-                    ->columns(1)
-                    ->schema([
-                        Hidden::make('predicciones'),
-                        View::make('filament.fileds.predicciones-chart')
-                            ->visible(fn ($get) => filled($get('predicciones'))),
+                                        $lstmUrl = rtrim(config('services.lstm.url'), '/') . '/predict';
+
+                                        rescue(function () use ($payload, $set, $lstmUrl) {
+                                            $response = Http::timeout(30)
+                                                ->post($lstmUrl, $payload);
+
+                                            if ($response->successful()) {
+                                                $set('predicciones', $response->json('predicciones'));
+                                            } else {
+                                                $set('predicciones', [['fecha' => '-', 'prediccion_capital' => 'Error en la predicción']]);
+                                            }
+                                        }, function () use ($set) {
+                                            $set('predicciones', [['fecha' => '-', 'prediccion_capital' => 'Error de conexión']]);
+                                        });
+                                    }),
+
+                                TextInput::make('capital_destino')
+                                    ->label('Capital actual')
+                                    ->disabled()
+                                    ->numeric()
+                                    ->default(0),
+                            ]),
+
+                        Section::make('Prediccion de Capital y Detalles de Distribución')
+                            ->columns(1)
+                            ->columnSpan(['default' => 1, 'lg' => 2])
+                            ->schema([
+                                Hidden::make('predicciones'),
+                                View::make('filament.fileds.predicciones-chart')
+                                    ->visible(fn ($get) => filled($get('predicciones')))
+                                    ->extraAttributes(['class' => 'predicciones-chart-field']),
+                            ]),
                     ]),
 
                 section::make('Información de Transferencia')

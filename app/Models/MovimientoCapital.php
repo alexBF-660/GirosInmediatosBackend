@@ -17,6 +17,10 @@ class MovimientoCapital extends Model
         'capital_actual'
     ];
 
+    protected $casts = [
+        'fecha' => 'date',
+    ];
+
     public function sucursal()
     {
         return $this->belongsTo(Sucursales::class, 'sucursal_id');

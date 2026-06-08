@@ -22,6 +22,8 @@ class DistribucionCapitalResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Distribución de Capital';
     protected static ?string $navigationLabel = 'Distribución de Capital';
+    protected static ?string $modelLabel = 'Distribución de capital';
+    protected static ?string $pluralModelLabel = 'Distribuciones de capital';
 
     public static function getNavigationGroup(): ?string
     {

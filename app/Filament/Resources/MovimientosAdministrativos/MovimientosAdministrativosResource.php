@@ -18,6 +18,9 @@ class MovimientosAdministrativosResource extends Resource
 {
     protected static ?string $model = MovimientosAdministrativos::class;
 
+    protected static ?string $modelLabel = 'Movimiento administrativo';
+    protected static ?string $pluralModelLabel = 'Movimientos administrativos';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
 
     protected static ?string $recordTitleAttribute = 'Movimientos Administrativos';

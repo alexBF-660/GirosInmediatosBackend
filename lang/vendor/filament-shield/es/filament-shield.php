@@ -31,7 +31,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'nav.group' => 'Filament Shield',
+    'nav.group' => 'Seguridad',
     'nav.role.label' => 'Roles',
     'nav.role.icon' => 'heroicon-o-shield-check',
     'resource.label.role' => 'Rol',
@@ -51,6 +51,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Permission action labels (used in role checkboxes)
+    |--------------------------------------------------------------------------
+    */
+
+    'view' => 'Ver registro',
+    'view_any' => 'Ver listado',
+    'create' => 'Crear',
+    'update' => 'Actualizar',
+    'delete' => 'Eliminar registro',
+    'delete_any' => 'Eliminar varios',
+    'force_delete' => 'Eliminar permanentemente',
+    'force_delete_any' => 'Eliminar permanentemente varios',
+    'restore' => 'Restaurar registro',
+    'restore_any' => 'Restaurar varios',
+    'replicate' => 'Duplicar',
+    'reorder' => 'Reordenar',
+
+    /*
+    |--------------------------------------------------------------------------
     | Messages
     |--------------------------------------------------------------------------
     */
@@ -64,17 +83,17 @@ return [
     */
 
     'resource_permission_prefixes_labels' => [
-        'view' => 'Ver un registro en particular',
-        'view_any' => 'Ver el listado de registros',
+        'view' => 'Ver registro',
+        'view_any' => 'Ver listado',
         'create' => 'Crear',
         'update' => 'Actualizar',
-        'delete' => 'Eliminar un registro en particular',
-        'delete_any' => 'Eliminar varios registros a la vez',
-        'force_delete' => 'Forzar elminación de un registro en particular',
-        'force_delete_any' => 'Forzar eliminación de varios registros',
-        'restore' => 'Restaurar un registro en particular',
+        'delete' => 'Eliminar registro',
+        'delete_any' => 'Eliminar varios',
+        'force_delete' => 'Eliminar permanentemente',
+        'force_delete_any' => 'Eliminar permanentemente varios',
+        'restore' => 'Restaurar registro',
+        'restore_any' => 'Restaurar varios',
+        'replicate' => 'Duplicar',
         'reorder' => 'Reordenar',
-        'restore_any' => 'Restaurar varios registros',
-        'replicate' => 'Replicar',
     ],
 ];

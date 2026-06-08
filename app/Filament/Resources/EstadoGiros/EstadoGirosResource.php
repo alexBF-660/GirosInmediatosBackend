@@ -22,6 +22,8 @@ class EstadoGirosResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Estados de Giros';
     protected static ?string $navigationLabel = 'Estados de Giros';
+    protected static ?string $modelLabel = 'Estado de giro';
+    protected static ?string $pluralModelLabel = 'Estados de giros';
 
 
     public static function getNavigationGroup(): ?string

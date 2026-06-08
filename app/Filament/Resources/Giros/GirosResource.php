@@ -19,6 +19,9 @@ class GirosResource extends Resource
 {
     protected static ?string $model = Giros::class;
 
+    protected static ?string $modelLabel = 'Giro';
+    protected static ?string $pluralModelLabel = 'Giros';
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?string $recordTitleAttribute = 'id';

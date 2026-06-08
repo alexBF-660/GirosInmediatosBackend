@@ -18,6 +18,9 @@ class DepartamentoResource extends Resource
 {
     protected static ?string $model = Departamento::class;
 
+    protected static ?string $modelLabel = 'Departamento';
+    protected static ?string $pluralModelLabel = 'Departamentos';
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-map-pin';
 
     protected static ?string $recordTitleAttribute = 'nombre';

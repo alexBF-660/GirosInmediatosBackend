@@ -9,6 +9,7 @@ use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Auth;
+use App\Filament\Support\OpensReportInNewTab;
 use Filament\Forms\Components\Hidden;
 
 class ListUsers extends ListRecords
@@ -45,13 +46,12 @@ class ListUsers extends ListRecords
                         ];
                     }
                 })
-                ->action(function (array $data) {
-                    // Redirige a la ruta del PDF según el sucursal_id seleccionado o del gerente
-                    return redirect()->away(
-                        route('usuarios.print', $data['sucursal_id'])
+                ->action(function (array $data, ListUsers $livewire): void {
+                    OpensReportInNewTab::dispatch(
+                        $livewire,
+                        route('usuarios.print', $data['sucursal_id']),
                     );
-                })
-                ->openUrlInNewTab(),
+                }),
             CreateAction::make()
                 ->icon('heroicon-o-user-plus')
                 ->label('Crear Usuario'),

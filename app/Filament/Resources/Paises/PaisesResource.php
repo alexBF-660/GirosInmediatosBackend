@@ -18,6 +18,9 @@ class PaisesResource extends Resource
 {
     protected static ?string $model = Paises::class;
 
+    protected static ?string $modelLabel = 'País';
+    protected static ?string $pluralModelLabel = 'Países';
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-globe-americas';
 
     protected static ?string $recordTitleAttribute = 'nombres';

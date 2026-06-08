@@ -19,12 +19,7 @@ class ListSucursales extends ListRecords
                 ->label('Imprimir Reporte de sucursales')
                 ->color('info')
                 ->icon('heroicon-o-printer')
-                ->action(function () {
-                    // Redirige a la ruta del PDF de países
-                    return redirect()->away(
-                        route('sucursalesPrint.print')
-                    );
-                })
+                ->url(route('sucursalesPrint.print'))
                 ->openUrlInNewTab(),
             CreateAction::make(),
         ];

@@ -19,12 +19,7 @@ class ListEstadoGiros extends ListRecords
                 ->label('Imprimir Reporte de Estado de Giros')
                 ->color('info')
                 ->icon('heroicon-o-printer')
-                ->action(function () {
-                    // Redirige a la ruta del PDF de países
-                    return redirect()->away(
-                        route('estadoGirosPrint.print')
-                    );
-                })
+                ->url(route('estadoGirosPrint.print'))
                 ->openUrlInNewTab(),
             CreateAction::make(),
         ];

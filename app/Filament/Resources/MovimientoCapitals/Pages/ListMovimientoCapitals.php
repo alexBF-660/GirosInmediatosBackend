@@ -18,7 +18,9 @@ class ListMovimientoCapitals extends ListRecords
             Action::make('imprimirMovimientoCapital')
                 ->label('Imprimir Reporte de Movimiento de Capital')
                 ->color('info')
-                ->icon('heroicon-o-printer'),
+                ->icon('heroicon-o-printer')
+                ->url(route('movimientoCapitalPrint.print'))
+                ->openUrlInNewTab(),
             CreateAction::make(),
         ];
     }

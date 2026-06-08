@@ -19,12 +19,7 @@ class ListPaises extends ListRecords
                 ->label('Imprimir Reporte de Países')
                 ->color('info')
                 ->icon('heroicon-o-printer')
-                ->action(function () {
-                    // Redirige a la ruta del PDF de países
-                    return redirect()->away(
-                        route('paisesPrint.print')
-                    );
-                })
+                ->url(route('paisesPrint.print'))
                 ->openUrlInNewTab(),
             CreateAction::make(),
         ];

@@ -20,12 +20,7 @@ class ListDepartamentos extends ListRecords
                 ->label('Imprimir Departamento')
                 ->color('info')
                 ->icon('heroicon-o-printer')
-                ->action(function () {
-                    // Redirige a la ruta del PDF de países
-                    return redirect()->away(
-                        route('departamentosPrint.print')
-                    );
-                })
+                ->url(route('departamentosPrint.print'))
                 ->openUrlInNewTab(),
             CreateAction::make(),
         ];

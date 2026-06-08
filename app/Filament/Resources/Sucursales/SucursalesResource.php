@@ -20,6 +20,9 @@ class SucursalesResource extends Resource
 {
     protected static ?string $model = Sucursales::class;
 
+    protected static ?string $modelLabel = 'Sucursal';
+    protected static ?string $pluralModelLabel = 'Sucursales';
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';
 
     protected static ?string $recordTitleAttribute = 'nombre';

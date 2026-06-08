@@ -19,12 +19,7 @@ class ListMovimientosAdministrativos extends ListRecords
                 ->label('Imprimir Reporte de Movimientos Administrativos')
                 ->color('info')
                 ->icon('heroicon-o-printer')
-                ->action(function () {
-                    // Redirige a la ruta del PDF de países
-                    return redirect()->away(
-                        route('movimientosAdmPrint.print')
-                    );
-                })
+                ->url(route('movimientosAdmPrint.print'))
                 ->openUrlInNewTab(),
             CreateAction::make(),
         ];

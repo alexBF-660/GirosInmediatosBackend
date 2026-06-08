@@ -5,11 +5,13 @@ namespace App\Filament\Resources\DistribucionCapitals\Schemas;
 use App\Models\Sucursales;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Http;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\View;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Placeholder;
 
 
 class DistribucionCapitalForm
@@ -159,26 +161,9 @@ class DistribucionCapitalForm
                 Section::make('Prediccion de Capital y Detalles de Distribución')
                     ->columns(1)
                     ->schema([
-                        Placeholder::make('predicciones_box')
-                    ->label('Predicciones de Capital para los próximos 7 días')
-                    ->content(function ($get) {
-                        $predicciones = $get('predicciones');
-
-                        // Formatear el contenido como HTML
-                        return collect($predicciones)
-                            ->map(
-                                fn ($item) => 
-                                "
-                                <div>
-                                    <strong>Fecha</strong>: {$item['fecha']} <br> 
-                                    <strong>Capital estimado</strong>: " . number_format($item['prediccion_capital'], 2) . " Bs
-                                </div><br>
-                                "
-                            )
-                            ->implode('');
-                    })
-                    ->html() // <-- importante, habilita interpretación de HTML
-                    ->visible(fn ($get) => filled($get('predicciones'))),
+                        Hidden::make('predicciones'),
+                        View::make('filament.fileds.predicciones-chart')
+                            ->visible(fn ($get) => filled($get('predicciones'))),
                     ]),
 
                 section::make('Información de Transferencia')

@@ -21,6 +21,8 @@ class MovimientoCapitalResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     protected static ?string $navigationLabel = 'Movimiento de Capital';
+    protected static ?string $modelLabel = 'Movimiento de capital';
+    protected static ?string $pluralModelLabel = 'Movimientos de capital';
 
 
     public static function getNavigationGroup(): ?string

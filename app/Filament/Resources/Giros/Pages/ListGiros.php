@@ -6,6 +6,7 @@ use App\Filament\Resources\Giros\GirosResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Notifications\Notification;
+use App\Filament\Support\OpensReportInNewTab;
 use App\Models\Sucursales;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -57,13 +58,12 @@ class ListGiros extends ListRecords
                         ];
                     }
                 })
-                ->action(function (array $data) {
-                    // Redirige a la ruta del PDF según el sucursal_id seleccionado o del gerente
-                    return redirect()->away(
-                        route('giroRango.print', $data)
+                ->action(function (array $data, ListGiros $livewire): void {
+                    OpensReportInNewTab::dispatch(
+                        $livewire,
+                        route('giroRango.print', $data),
                     );
-                })
-                ->openUrlInNewTab(),
+                }),
 
             Action::make('imprimirReporteDiario')
                 ->label('Imprimir Reporte Diario')
@@ -95,13 +95,12 @@ class ListGiros extends ListRecords
                         ];
                     }
                 })
-                ->action(function (array $data) {
-                    // Redirige a la ruta del PDF según el sucursal_id seleccionado o del gerente
-                    return redirect()->away(
-                        route('giroDiario.print', $data)
+                ->action(function (array $data, ListGiros $livewire): void {
+                    OpensReportInNewTab::dispatch(
+                        $livewire,
+                        route('giroDiario.print', $data),
                     );
-                })
-                ->openUrlInNewTab(),
+                }),
 
             CreateAction::make(),
         ];

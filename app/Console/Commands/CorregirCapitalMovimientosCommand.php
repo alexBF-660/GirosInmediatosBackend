@@ -12,9 +12,9 @@ class CorregirCapitalMovimientosCommand extends Command
 
     protected $description = 'Recalcula capital_actual en movimiento_capital con piso mínimo y sincroniza sucursales';
 
-    private const CAPITAL_INICIAL = 10000;
+    private const CAPITAL_MINIMO = NormalizarCapitalSucursalesCommand::CAPITAL_MIN;
 
-    private const CAPITAL_MINIMO = 5000;
+    private const CAPITAL_MAXIMO = NormalizarCapitalSucursalesCommand::CAPITAL_MAX;
 
     public function handle(): int
     {
@@ -33,13 +33,13 @@ class CorregirCapitalMovimientosCommand extends Command
                 continue;
             }
 
-            $capital = (float) self::CAPITAL_INICIAL;
+            $capital = NormalizarCapitalSucursalesCommand::capitalObjetivo((int) $sucursal->id);
 
             foreach ($movimientos as $movimiento) {
                 $capitalInicial = $capital;
                 $capital = max(
-                    (float) self::CAPITAL_MINIMO,
-                    $capitalInicial + (float) $movimiento->balance_dia
+                    self::CAPITAL_MINIMO,
+                    min(self::CAPITAL_MAXIMO, $capitalInicial + (float) $movimiento->balance_dia)
                 );
 
                 DB::table('movimiento_capital')

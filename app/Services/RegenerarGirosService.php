@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Console\Commands\NormalizarCapitalSucursalesCommand;
 use App\Models\Giros;
 use App\Models\MovimientoCapital;
 use App\Models\Sucursales;
@@ -13,7 +14,9 @@ use RuntimeException;
 
 class RegenerarGirosService
 {
-    private const CAPITAL_INICIAL = 10000;
+    private const CAPITAL_MINIMO_FINAL = 500;
+
+    private const CAPITAL_MAXIMO_FINAL = 8000;
 
     private const FECHA_FIN = '2026-06-09';
 
@@ -58,8 +61,6 @@ class RegenerarGirosService
         8 => 1,
         9 => 1,
     ];
-
-    private const CAPITAL_MINIMO_FINAL = 5000;
 
     /** @var array<int, string> */
     private array $nombres = [
@@ -182,7 +183,11 @@ class RegenerarGirosService
         DB::table('movimiento_capital')->truncate();
         DB::table('giros')->truncate();
 
-        Sucursales::query()->update(['capital_actual' => self::CAPITAL_INICIAL]);
+        foreach ($this->sucursalIds as $sucursalId) {
+            Sucursales::query()
+                ->whereKey($sucursalId)
+                ->update(['capital_actual' => NormalizarCapitalSucursalesCommand::capitalObjetivo($sucursalId)]);
+        }
     }
 
     /**
@@ -388,7 +393,10 @@ class RegenerarGirosService
     private function reconstruirMovimientosCapital(Carbon $fechaInicio, Carbon $fechaFin): void
     {
         /** @var array<int, float> $capitales */
-        $capitales = array_fill_keys($this->sucursalIds, (float) self::CAPITAL_INICIAL);
+        $capitales = [];
+        foreach ($this->sucursalIds as $sucursalId) {
+            $capitales[$sucursalId] = NormalizarCapitalSucursalesCommand::capitalObjetivo($sucursalId);
+        }
 
         $envios = DB::table('giros')
             ->select('fecha_envio', 'sucursal_origen_id', DB::raw('SUM(monto_enviado) as total'))
@@ -430,7 +438,10 @@ class RegenerarGirosService
                 $capitalInicial = $capitales[$sucursalId];
                 $capitalActual = max(
                     (float) self::CAPITAL_MINIMO_FINAL,
-                    $capitalInicial + $totalRecibido - $totalEnviado
+                    min(
+                        (float) self::CAPITAL_MAXIMO_FINAL,
+                        $capitalInicial + $totalRecibido - $totalEnviado
+                    )
                 );
                 $capitales[$sucursalId] = $capitalActual;
 
@@ -467,9 +478,10 @@ class RegenerarGirosService
     private function garantizarCapitalesPositivos(array &$capitales): void
     {
         foreach ($capitales as $sucursalId => $capital) {
-            if ($capital < self::CAPITAL_MINIMO_FINAL) {
-                $capitales[$sucursalId] = (float) self::CAPITAL_MINIMO_FINAL;
-            }
+            $capitales[$sucursalId] = max(
+                (float) self::CAPITAL_MINIMO_FINAL,
+                min((float) self::CAPITAL_MAXIMO_FINAL, (float) $capital)
+            );
         }
     }
 

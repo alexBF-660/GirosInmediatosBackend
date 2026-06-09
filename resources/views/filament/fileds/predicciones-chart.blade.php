@@ -87,41 +87,43 @@
         inset: 0;
         width: 100%;
         height: 100%;
-        pointer-events: none;
         display: block;
         overflow: visible;
     }
 
-    .predicciones-chart-hitarea {
-        position: absolute;
-        z-index: 10;
-        width: 32px;
-        height: 32px;
-        transform: translate(-50%, -50%);
-        cursor: pointer;
-    }
-
-    .predicciones-chart-hitarea:hover .predicciones-chart-tooltip {
-        display: block;
-    }
-
-    .predicciones-chart-tooltip {
-        display: none;
-        position: absolute;
-        bottom: calc(100% + 10px);
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 9999;
+    .predicciones-chart svg .chart-static {
         pointer-events: none;
-        white-space: nowrap;
-        border-radius: 0.5rem;
-        border: 1px solid rgb(75 85 99);
-        background: rgb(17 24 39);
-        padding: 0.5rem 0.75rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #fff;
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.25);
+    }
+
+    .predicciones-chart-point {
+        cursor: pointer;
+        pointer-events: all;
+    }
+
+    .predicciones-chart-point .predicciones-chart-hit {
+        fill: transparent;
+        stroke: transparent;
+    }
+
+    .predicciones-chart-point .predicciones-chart-dot {
+        transition: r 0.15s ease, stroke-width 0.15s ease;
+    }
+
+    .predicciones-chart-point:hover .predicciones-chart-dot,
+    .predicciones-chart-point:focus-visible .predicciones-chart-dot {
+        r: 9;
+        stroke-width: 2.5;
+    }
+
+    .predicciones-chart-point .predicciones-chart-tooltip {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease;
+    }
+
+    .predicciones-chart-point:hover .predicciones-chart-tooltip,
+    .predicciones-chart-point:focus-visible .predicciones-chart-tooltip {
+        opacity: 1;
     }
 </style>
 
@@ -132,8 +134,9 @@
         aria-label="Gráfico de predicción de capital"
     >
         @foreach ($yLabels as $line)
-            <line x1="{{ $padL }}" y1="{{ $line['y'] }}" x2="{{ $width - $padR }}" y2="{{ $line['y'] }}" stroke="rgba(148,163,184,0.25)" stroke-width="1"/>
+            <line class="chart-static" x1="{{ $padL }}" y1="{{ $line['y'] }}" x2="{{ $width - $padR }}" y2="{{ $line['y'] }}" stroke="rgba(148,163,184,0.25)" stroke-width="1"/>
             <text
+                class="chart-static"
                 x="{{ $padL - 10 }}"
                 y="{{ $line['y'] + 5 }}"
                 text-anchor="end"
@@ -143,26 +146,60 @@
             >{{ $line['label'] }}</text>
         @endforeach
 
-        <line x1="{{ $padL }}" y1="{{ $padT }}" x2="{{ $padL }}" y2="{{ $padT + $chartH }}" stroke="rgba(148,163,184,0.5)" stroke-width="1.5"/>
-        <line x1="{{ $padL }}" y1="{{ $padT + $chartH }}" x2="{{ $width - $padR }}" y2="{{ $padT + $chartH }}" stroke="rgba(148,163,184,0.5)" stroke-width="1.5"/>
+        <line class="chart-static" x1="{{ $padL }}" y1="{{ $padT }}" x2="{{ $padL }}" y2="{{ $padT + $chartH }}" stroke="rgba(148,163,184,0.5)" stroke-width="1.5"/>
+        <line class="chart-static" x1="{{ $padL }}" y1="{{ $padT + $chartH }}" x2="{{ $width - $padR }}" y2="{{ $padT + $chartH }}" stroke="rgba(148,163,184,0.5)" stroke-width="1.5"/>
 
         @if ($minY < 0 && $maxY > 0)
             @php
                 $zeroY = round($padT + $chartH - ((0 - $minY) / $ySpan) * $chartH, 1);
             @endphp
-            <line x1="{{ $padL }}" y1="{{ $zeroY }}" x2="{{ $width - $padR }}" y2="{{ $zeroY }}" stroke="rgba(251,191,36,0.35)" stroke-width="1" stroke-dasharray="4,4"/>
+            <line class="chart-static" x1="{{ $padL }}" y1="{{ $zeroY }}" x2="{{ $width - $padR }}" y2="{{ $zeroY }}" stroke="rgba(251,191,36,0.35)" stroke-width="1" stroke-dasharray="4,4"/>
         @endif
 
         @if (count($points) > 1)
-            <polyline points="{{ $polyline }}" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline class="chart-static" points="{{ $polyline }}" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
         @endif
 
         @foreach ($circles as $point)
-            <circle cx="{{ $point['x'] }}" cy="{{ $point['y'] }}" r="6.5" fill="#f59e0b" stroke="#1f2937" stroke-width="2"/>
+            @php
+                $tooltipText = number_format($point['value'], 2, '.', ',') . ' Bs';
+                $tooltipWidth = max(strlen($tooltipText) * 9, 108);
+                $tooltipHalf = $tooltipWidth / 2;
+            @endphp
+            <g
+                class="predicciones-chart-point"
+                transform="translate({{ $point['x'] }}, {{ $point['y'] }})"
+                tabindex="0"
+                role="button"
+                aria-label="{{ $tooltipText }}"
+            >
+                <circle class="predicciones-chart-hit" r="32"/>
+                <circle class="predicciones-chart-dot" r="6.5" fill="#f59e0b" stroke="#1f2937" stroke-width="2"/>
+                <g class="predicciones-chart-tooltip" transform="translate(0, -46)">
+                    <rect
+                        x="{{ -$tooltipHalf }}"
+                        y="-30"
+                        width="{{ $tooltipWidth }}"
+                        height="30"
+                        rx="8"
+                        fill="rgb(17 24 39)"
+                        stroke="rgb(75 85 99)"
+                        stroke-width="1"
+                    />
+                    <text
+                        text-anchor="middle"
+                        y="-10"
+                        fill="#fff"
+                        font-size="15"
+                        font-weight="600"
+                    >{{ $tooltipText }}</text>
+                </g>
+            </g>
         @endforeach
 
         @foreach ($circles as $point)
             <text
+                class="chart-static"
                 x="{{ $point['x'] }}"
                 y="{{ $height - 52 }}"
                 text-anchor="middle"
@@ -176,6 +213,7 @@
         @endforeach
 
         <text
+            class="chart-static"
             x="{{ $padL + ($chartW / 2) }}"
             y="{{ $height - 8 }}"
             text-anchor="middle"
@@ -184,19 +222,5 @@
             font-weight="500"
         >Fecha</text>
     </svg>
-
-    @foreach ($circles as $point)
-        @php
-            $leftPct = ($point['x'] / $width) * 100;
-            $topPct = ($point['y'] / $height) * 100;
-            $tooltipText = number_format($point['value'], 2, '.', ',') . ' Bs';
-        @endphp
-        <div
-            class="predicciones-chart-hitarea"
-            style="left: {{ $leftPct }}%; top: {{ $topPct }}%;"
-        >
-            <span class="predicciones-chart-tooltip">{{ $tooltipText }}</span>
-        </div>
-    @endforeach
 </div>
 @endif

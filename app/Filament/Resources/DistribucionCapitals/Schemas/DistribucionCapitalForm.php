@@ -18,6 +18,84 @@ use Filament\Forms\Components\DatePicker;
 
 class DistribucionCapitalForm
 {
+    private const CAPITAL_SIM_MIN = 500;
+
+    private const CAPITAL_SIM_MAX = 8000;
+
+    protected static function capitalSimulacion(?float $valor): float
+    {
+        if ($valor === null) {
+            return (float) self::CAPITAL_SIM_MIN;
+        }
+
+        return max(self::CAPITAL_SIM_MIN, min(self::CAPITAL_SIM_MAX, $valor));
+    }
+
+    protected static function solicitarPredicciones(?int $sucursalId, ?float $capitalBase, callable $set): void
+    {
+        if (! $sucursalId) {
+            $set('predicciones', null);
+
+            return;
+        }
+
+        $capitalBase = self::capitalSimulacion($capitalBase);
+
+        $movimientos = MovimientoCapital::query()
+            ->where('sucursal_id', $sucursalId)
+            ->orderByDesc('fecha')
+            ->limit(180)
+            ->get([
+                'fecha',
+                'total_enviado',
+                'total_recibido',
+                'balance_dia',
+                'capital_inicial',
+                'capital_actual',
+            ])
+            ->sortBy('fecha')
+            ->values();
+
+        if ($movimientos->count() < 35) {
+            $set('predicciones', [[
+                'fecha' => '-',
+                'prediccion_capital' => 'Se necesitan al menos 35 movimientos de capital para predecir.',
+            ]]);
+
+            return;
+        }
+
+        $data = $movimientos->map(fn (MovimientoCapital $movimiento): array => [
+            'fecha' => $movimiento->fecha->format('Y-m-d'),
+            'total_enviado' => (float) $movimiento->total_enviado,
+            'total_recibido' => (float) $movimiento->total_recibido,
+            'balance_dia' => (float) $movimiento->balance_dia,
+            'capital_inicial' => (float) $movimiento->capital_inicial,
+            'capital_actual' => (float) $movimiento->capital_actual,
+        ])->values()->all();
+
+        $payload = [
+            'sucursal_id' => $sucursalId,
+            'data' => $data,
+            'capital_base' => $capitalBase,
+        ];
+
+        $lstmUrl = rtrim(config('services.lstm.url'), '/') . '/predict';
+
+        rescue(function () use ($payload, $set, $lstmUrl) {
+            $response = Http::timeout(30)
+                ->post($lstmUrl, $payload);
+
+            if ($response->successful()) {
+                $set('predicciones', $response->json('predicciones'));
+            } else {
+                $set('predicciones', [['fecha' => '-', 'prediccion_capital' => 'Error en la predicción']]);
+            }
+        }, function () use ($set) {
+            $set('predicciones', [['fecha' => '-', 'prediccion_capital' => 'Error de conexión']]);
+        });
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -36,30 +114,31 @@ class DistribucionCapitalForm
                                     return '<p>No hay sucursales registradas.</p>';
                                 }
 
-                                $maxCapital = $sucursales->max('capital_actual');
-                                $containerHeight = 200; 
+                                $maxCapital = max($sucursales->max('capital_actual'), 1);
+                                $containerHeight = 200;
 
                                 $html = '<div style="display:flex; align-items:flex-end; gap:16px; height:'.$containerHeight.'px; padding:8px;">';
 
                                 foreach ($sucursales as $s) {
-                                    $heightPx = ($s->capital_actual / $maxCapital) * $containerHeight;
+                                    $capital = (float) $s->capital_actual;
+                                    $heightPx = ($capital / $maxCapital) * $containerHeight;
+                                    $capitalFmt = number_format($capital, 2, ',', '.');
 
-                                    $color = '#3b82f6'; // azul por defecto
-
-                                    if ($s->capital_actual > 8000) {
-                                        $color = '#3b82f6'; // azul
-                                    } elseif ($s->capital_actual > 5000) {
-                                        $color = '#facc15'; // amarillo
-                                    } elseif ($s->capital_actual > 1000) {
-                                        $color = '#fb923c'; // naranja
+                                    if ($capital > 6000) {
+                                        $color = '#3b82f6';
+                                    } elseif ($capital > 4000) {
+                                        $color = '#facc15';
+                                    } elseif ($capital > 1500) {
+                                        $color = '#fb923c';
                                     } else {
-                                        $color = '#ef4444'; // rojo
+                                        $color = '#ef4444';
                                     }
+
                                     $html .= "
                                         <div style='display:flex; flex-direction:column; align-items:center; justify-content:flex-end;'>
                                             <div style='width:40px; height:{$heightPx}px; background:{$color}; border-radius:4px; transition: height 0.5s;'></div>
                                             <span style='margin-top:4px; text-align:center; font-size:12px;'>{$s->nombre}</span>
-                                            <span style='font-size:11px;'>{$s->capital_actual} Bs</span>
+                                            <span style='font-size:11px;'>{$capitalFmt} Bs</span>
                                         </div>
                                     ";
                                 }
@@ -99,67 +178,27 @@ class DistribucionCapitalForm
                                         }
 
                                         $sucursal = Sucursales::find($state);
-                                        $set('capital_destino', $sucursal?->capital_actual ?? 0);
-
-                                        $movimientos = MovimientoCapital::query()
-                                            ->where('sucursal_id', $state)
-                                            ->orderByDesc('fecha')
-                                            ->limit(180)
-                                            ->get([
-                                                'fecha',
-                                                'total_enviado',
-                                                'total_recibido',
-                                                'balance_dia',
-                                                'capital_inicial',
-                                                'capital_actual',
-                                            ])
-                                            ->sortBy('fecha')
-                                            ->values();
-
-                                        if ($movimientos->count() < 35) {
-                                            $set('predicciones', [[
-                                                'fecha' => '-',
-                                                'prediccion_capital' => 'Se necesitan al menos 35 movimientos de capital para predecir.',
-                                            ]]);
-
-                                            return;
-                                        }
-
-                                        $data = $movimientos->map(fn (MovimientoCapital $movimiento): array => [
-                                            'fecha' => $movimiento->fecha->format('Y-m-d'),
-                                            'total_enviado' => (float) $movimiento->total_enviado,
-                                            'total_recibido' => (float) $movimiento->total_recibido,
-                                            'balance_dia' => (float) $movimiento->balance_dia,
-                                            'capital_inicial' => (float) $movimiento->capital_inicial,
-                                            'capital_actual' => (float) $movimiento->capital_actual,
-                                        ])->values()->all();
-
-                                        $payload = [
-                                            'sucursal_id' => $state,
-                                            'data' => $data,
-                                        ];
-
-                                        $lstmUrl = rtrim(config('services.lstm.url'), '/') . '/predict';
-
-                                        rescue(function () use ($payload, $set, $lstmUrl) {
-                                            $response = Http::timeout(30)
-                                                ->post($lstmUrl, $payload);
-
-                                            if ($response->successful()) {
-                                                $set('predicciones', $response->json('predicciones'));
-                                            } else {
-                                                $set('predicciones', [['fecha' => '-', 'prediccion_capital' => 'Error en la predicción']]);
-                                            }
-                                        }, function () use ($set) {
-                                            $set('predicciones', [['fecha' => '-', 'prediccion_capital' => 'Error de conexión']]);
-                                        });
+                                        $capital = round((float) ($sucursal?->capital_actual ?? self::CAPITAL_SIM_MIN), 2);
+                                        $set('capital_destino', $capital);
+                                        self::solicitarPredicciones((int) $state, $capital, $set);
                                     }),
 
                                 TextInput::make('capital_destino')
-                                    ->label('Capital actual')
-                                    ->disabled()
+                                    ->label('Capital de referencia')
                                     ->numeric()
-                                    ->default(0),
+                                    ->minValue(self::CAPITAL_SIM_MIN)
+                                    ->maxValue(self::CAPITAL_SIM_MAX)
+                                    ->required()
+                                    ->live(debounce: 600)
+                                    ->afterStateUpdated(function ($state, $get, $set) {
+                                        $sucursalId = $get('sucursal_destino_id');
+
+                                        if (! $sucursalId) {
+                                            return;
+                                        }
+
+                                        self::solicitarPredicciones((int) $sucursalId, (float) $state, $set);
+                                    }),
                             ]),
 
                         Section::make('Prediccion de Capital y Detalles de Distribución')
